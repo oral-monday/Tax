@@ -1,81 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Israel R&D Incentive Calculator 2026</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f6fa;color:#0f1117;font-size:14px}
-  a{color:inherit}
-  .topbar{background:#fff;border-bottom:1px solid #e4e7ef;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:50}
-  .topbar-title{font-size:15px;font-weight:700}
-  .topbar-sub{font-size:11px;color:#9aa0b8;margin-top:2px}
-  .rate-live{color:#16a34a;font-weight:600}
-  .rate-fallback{color:#d97706;font-weight:600}
-  .topbar-badges{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .layout{display:grid;grid-template-columns:1fr 310px;gap:0;max-width:1080px;margin:0 auto;padding:20px 16px;align-items:start}
-  @media(max-width:720px){.layout{grid-template-columns:1fr}.sticky-panel{position:static!important;margin-top:0}}
-  .col-left{padding-right:16px}
-  @media(max-width:720px){.col-left{padding-right:0}}
-  .sticky-panel{position:sticky;top:68px}
-  .card{background:#fff;border:1px solid #e4e7ef;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:14px}
-  .card-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-  .field{margin-bottom:14px}
-  .field-row{display:flex;gap:4%;flex-wrap:wrap}
-  .field-half{flex:0 0 48%}
-  @media(max-width:520px){.field-half{flex:0 0 100%}}
-  label{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#4b5470;margin-bottom:5px}
-  input[type=number]{width:100%;background:#f5f6fa;border:1.5px solid #e4e7ef;border-radius:8px;padding:9px 12px;font-size:14px;color:#0f1117;font-family:'SF Mono','Fira Code',monospace;outline:none;transition:border-color .15s,background .15s}
-  input[type=number]:focus{border-color:#4361ee;background:#fff}
-  input[type=number]::-webkit-inner-spin-button{opacity:.4}
-  .hint{font-size:11px;color:#9aa0b8;margin-top:4px}
-  .sub{font-size:11px;color:#4361ee;margin-top:4px;font-family:'SF Mono','Fira Code',monospace;font-weight:600}
-  .sub.warn{color:#d97706}
-  .rate-badge{font-size:11px;font-weight:700;color:#4361ee;margin-left:auto;padding-left:8px;white-space:nowrap}
-  .badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
-  .badge-green{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
-  .badge-red{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
-  .badge-blue{background:#eef0fd;color:#4361ee;border:1px solid #c7cef9}
-  .badge-yellow{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
-  .divider{border-top:1px solid #e4e7ef;margin:14px 0}
-  .intensity-bar-wrap{margin-bottom:14px}
-  .intensity-bar-labels{display:flex;justify-content:space-between;font-size:11px;color:#9aa0b8;margin-bottom:4px}
-  .intensity-bar-track{height:6px;background:#f5f6fa;border-radius:6px;overflow:hidden}
-  .intensity-bar-fill{height:100%;border-radius:6px;transition:width .3s,background .3s}
-  .result-big{font-size:38px;font-weight:800;font-family:'SF Mono','Fira Code',monospace;letter-spacing:-.02em;line-height:1}
-  .result-ils{font-size:14px;font-family:'SF Mono','Fira Code',monospace;color:#4b5470;margin-top:4px}
-  .result-rate{font-size:11px;color:#9aa0b8;margin-top:6px}
-  .breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #e4e7ef}
-  .breakdown-label{font-size:12px;color:#4b5470}
-  .breakdown-label.bold{color:#0f1117;font-weight:700}
-  .breakdown-val{text-align:right}
-  .breakdown-val-usd{font-size:13px;font-weight:500;font-family:'SF Mono','Fira Code',monospace}
-  .breakdown-val-usd.bold{font-weight:700;color:#4361ee}
-  .breakdown-val-ils{font-size:10px;color:#9aa0b8;font-family:'SF Mono','Fira Code',monospace}
-  .bar-track{height:6px;border-radius:6px;overflow:hidden;display:flex;background:#f5f6fa;margin-top:12px}
-  .bar-below{background:#4361ee;transition:flex .3s}
-  .bar-above{background:#2d4bc7;transition:flex .3s}
-  .bar-labels{display:flex;gap:12px;margin-top:6px;font-size:10px;color:#9aa0b8}
-  .bar-dot{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:4px}
-  .payout-option{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .15s;border:1.5px solid #e4e7ef;background:#f5f6fa}
-  .payout-option.active{background:#eef0fd;border-color:#4361ee}
-  .payout-radio{width:16px;height:16px;border-radius:50%;border:2px solid #e4e7ef;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .15s}
-  .payout-radio.active{border-color:#4361ee;background:#4361ee}
-  .payout-radio-dot{width:6px;height:6px;border-radius:50%;background:#fff}
-  .payout-title{font-size:12px;font-weight:700;color:#0f1117}
-  .payout-title.active{color:#4361ee}
-  .payout-desc{font-size:11px;color:#9aa0b8;margin-top:2px;line-height:1.5}
-  .sla-row{display:flex;justify-content:space-between;align-items:center}
-  .sla-num{font-size:26px;font-weight:800;color:#4361ee;font-family:'SF Mono','Fira Code',monospace;line-height:1}
-  .sla-unit{font-size:10px;color:#9aa0b8;text-align:right}
-  .footer{font-size:10px;color:#9aa0b8;line-height:1.7;padding:0 4px;margin-top:4px}
-  .tip-wrap{position:relative;display:inline-flex}
-  .tip-icon{width:15px;height:15px;border-radius:50%;background:#e8eaf2;border:1px solid #e4e7ef;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#9aa0b8;cursor:help;font-weight:700;flex-shrink:0}
-  .tip-box{display:none;position:absolute;left:20px;top:-2px;z-index:99;background:#1e2235;border:1px solid #3a3f55;border-radius:8px;padding:7px 11px;font-size:11px;color:#d0d4e8;width:230px;line-height:1.6;box-shadow:0 8px 24px rgba(0,0,0,.25)}
-  .tip-wrap:hover .tip-box{display:block}
-  .inner-card{background:#f5f6fa;border:1px solid #e4e7ef;border-radius:10px;padding:12px 14px;margin-bottom:10px}
-  .inner-card-title{font-size:11px;font-weight:700;color:#9aa0b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f6fa;color:#0f1117;font-size:14px}
+.topbar{background:#fff;border-bottom:1px solid #e4e7ef;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:50}
+.topbar-title{font-size:15px;font-weight:700}
+.topbar-sub{font-size:11px;color:#9aa0b8;margin-top:2px}
+.topbar-badges{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.layout{display:grid;grid-template-columns:1fr 320px;max-width:1080px;margin:0 auto;padding:20px 16px;align-items:start}
+@media(max-width:720px){.layout{grid-template-columns:1fr}.sticky-panel{position:static!important}}
+.col-left{padding-right:16px}
+@media(max-width:720px){.col-left{padding-right:0}}
+.sticky-panel{position:sticky;top:68px}
+.card{background:#fff;border:1px solid #e4e7ef;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:14px}
+.card-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.field{margin-bottom:14px}
+.field-row{display:flex;gap:4%;flex-wrap:wrap}
+.field-half{flex:0 0 48%}
+@media(max-width:520px){.field-half{flex:0 0 100%}}
+label{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#4b5470;margin-bottom:5px}
+.rate-badge{font-size:11px;font-weight:700;color:#4361ee;margin-left:auto;white-space:nowrap}
+.rate-badge-yellow{font-size:11px;font-weight:700;color:#d97706;margin-left:auto;white-space:nowrap}
+input[type=number]{width:100%;background:#f5f6fa;border:1.5px solid #e4e7ef;border-radius:8px;padding:9px 12px;font-size:14px;color:#0f1117;font-family:'SF Mono','Fira Code',monospace;outline:none;transition:border-color .15s,background .15s}
+input[type=number]:focus{border-color:#4361ee;background:#fff}
+input[type=number]::-webkit-inner-spin-button{opacity:.4}
+.hint{font-size:11px;color:#9aa0b8;margin-top:4px;line-height:1.5}
+.sub{font-size:11px;color:#4361ee;margin-top:4px;font-family:'SF Mono','Fira Code',monospace;font-weight:600}
+.sub-warn{font-size:11px;color:#d97706;margin-top:4px;font-family:'SF Mono','Fira Code',monospace;font-weight:600}
+.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.badge-green{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.badge-red{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.badge-blue{background:#eef0fd;color:#4361ee;border:1px solid #c7cef9}
+.badge-yellow{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
+.divider{border-top:1px solid #e4e7ef;margin:14px 0}
+.intensity-bar-wrap{margin-bottom:14px}
+.intensity-bar-labels{display:flex;justify-content:space-between;font-size:11px;color:#9aa0b8;margin-bottom:4px}
+.intensity-bar-track{height:6px;background:#f5f6fa;border-radius:6px;overflow:hidden}
+.intensity-bar-fill{height:100%;border-radius:6px;transition:width .3s,background .3s}
+.inner-card{background:#f5f6fa;border:1px solid #e4e7ef;border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.inner-card-title{font-size:11px;font-weight:700;color:#9aa0b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+/* Result panel */
+.result-card{background:#eef0fd;border:1px solid rgba(67,97,238,.25);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:14px}
+.result-label{font-size:11px;font-weight:700;color:#9aa0b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.result-big{font-size:38px;font-weight:800;font-family:'SF Mono','Fira Code',monospace;letter-spacing:-.02em;color:#4361ee;line-height:1}
+.result-ils{font-size:14px;font-family:'SF Mono','Fira Code',monospace;color:#4b5470;margin-top:4px}
+.result-rate{font-size:11px;color:#9aa0b8;margin-top:6px}
+.result-notice{font-size:11px;color:#dc2626;margin-top:8px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:6px 10px}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #e4e7ef}
+.breakdown-label{font-size:12px;color:#4b5470}
+.breakdown-label.bold{color:#0f1117;font-weight:700}
+.breakdown-val{text-align:right}
+.breakdown-usd{font-size:13px;font-weight:500;font-family:'SF Mono','Fira Code',monospace;color:#0f1117}
+.breakdown-usd.bold{font-weight:700;color:#4361ee}
+.breakdown-ils{font-size:10px;color:#9aa0b8;font-family:'SF Mono','Fira Code',monospace}
+.bar-track{height:6px;border-radius:6px;overflow:hidden;display:flex;background:#f5f6fa;margin-top:12px}
+.bar-below{background:#4361ee;transition:flex .3s}
+.bar-above{background:#2d4bc7;transition:flex .3s}
+.bar-labels{display:flex;gap:12px;margin-top:6px;font-size:10px;color:#9aa0b8}
+.bar-dot{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
+.payout-option{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .15s;border:1.5px solid #e4e7ef;background:#f5f6fa}
+.payout-option.active{background:#eef0fd;border-color:#4361ee}
+.payout-radio{width:16px;height:16px;border-radius:50%;border:2px solid #e4e7ef;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .15s;background:transparent}
+.payout-radio.active{border-color:#4361ee;background:#4361ee}
+.payout-radio-dot{width:6px;height:6px;border-radius:50%;background:#fff}
+.payout-title{font-size:12px;font-weight:700;color:#0f1117}
+.payout-title.active{color:#4361ee}
+.payout-desc{font-size:11px;color:#9aa0b8;margin-top:2px;line-height:1.5}
+.sla-row{display:flex;justify-content:space-between;align-items:center}
+.sla-num{font-size:26px;font-weight:800;color:#4361ee;font-family:'SF Mono','Fira Code',monospace;line-height:1}
+.sla-unit{font-size:10px;color:#9aa0b8;text-align:right}
+.footer-note{font-size:10px;color:#9aa0b8;line-height:1.7;padding:0 4px;margin-top:4px}
+.tip-wrap{position:relative;display:inline-flex}
+.tip-icon{width:15px;height:15px;border-radius:50%;background:#e8eaf2;border:1px solid #e4e7ef;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#9aa0b8;cursor:help;font-weight:700;flex-shrink:0}
+.tip-box{display:none;position:absolute;left:20px;top:-2px;z-index:99;background:#1e2235;border:1px solid #3a3f55;border-radius:8px;padding:7px 11px;font-size:11px;color:#d0d4e8;width:260px;line-height:1.6;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.tip-wrap:hover .tip-box{display:block}
+.approval-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.mini-card{background:#f5f6fa;border:1px solid #e4e7ef;border-radius:10px;padding:10px 14px}
+.mini-card.accent{background:#eef0fd;border-color:rgba(67,97,238,.25)}
+.mini-label{font-size:11px;color:#9aa0b8;margin-bottom:4px}
+.mini-val{font-family:'SF Mono','Fira Code',monospace;font-weight:600;font-size:14px}
+.mini-val.blue{color:#4361ee}
+.mini-ils{font-size:10px;color:#9aa0b8;font-family:'SF Mono','Fira Code',monospace}
+.rate-live{color:#16a34a;font-weight:600}
+.rate-fallback{color:#d97706;font-weight:600}
+.clear-btn{font-size:11px;color:#9aa0b8;background:none;border:1px solid #e4e7ef;border-radius:6px;padding:4px 10px;cursor:pointer;margin-left:8px}
 </style>
 </head>
 <body>
@@ -83,7 +95,7 @@
 <div class="topbar">
   <div>
     <div class="topbar-title">R&D Tax Credit Engine</div>
-    <div class="topbar-sub">Law for Encouraging R&D, 5786–2026 &nbsp;·&nbsp; All inputs in USD &nbsp;·&nbsp; Rate: <span id="rate-display">fetching rate…</span></div>
+    <div class="topbar-sub">Law for Encouraging R&D, 5786–2026 &nbsp;·&nbsp; All inputs in USD &nbsp;·&nbsp; Rate: <span id="rate-display">fetching…</span></div>
   </div>
   <div class="topbar-badges">
     <span id="badge-eligibility" class="badge badge-red">Not Eligible</span>
@@ -116,10 +128,10 @@
     <div class="field-row">
       <div class="field field-half">
         <label>Preferred Income (USD)
-          <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Preferred income from Israeli industrial plants. Minimum $27M / ₪100M required.</span></div>
+          <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Preferred income from Israeli industrial plants (מועדף / טכנולוגי מועדף). Minimum $27M / ₪100M required.</span></div>
         </label>
         <input type="number" id="piUSD" min="0" placeholder="0" oninput="calc()">
-        <div class="hint">Minimum $27,397,260 required</div>
+        <div class="hint" id="pi-hint">Minimum required: —</div>
         <div class="sub" id="pi-sub"></div>
       </div>
       <div class="field field-half">
@@ -139,7 +151,6 @@
       <div class="intensity-bar-track"><div class="intensity-bar-fill" id="intensity-fill" style="width:0%;background:#dc2626"></div></div>
       <div style="text-align:right;font-size:10px;color:#9aa0b8;margin-top:3px">55% threshold</div>
     </div>
-
     <div class="divider"></div>
     <div style="font-size:12px;font-weight:600;color:#9aa0b8;margin-bottom:12px">Employment Test (Section 1, Item 2)</div>
     <div class="field-row">
@@ -171,90 +182,130 @@
       <span id="badge-rate" class="badge badge-blue">PTE 3%/4%</span>
     </div>
 
+    <!-- Item 1: Salaries -->
     <div class="field">
-      <label>IL-Based R&D Salaries <span class="rate-badge">×100%</span>
-        <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Employer wage cost per Form 126. Includes pension and NI. Excludes severance and Section 102 equity costs.</span></div>
+      <label>
+        IL-Based R&D Salaries
+        <span class="rate-badge">×100%</span>
+        <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Employer wage cost per Form 126. Include: cash salaries, employer NI contributions, employer pension/training fund contributions (if not treated as income under Section 3), and equity compensation that IS deductible (not disallowed under Section 102(d)(1)). Exclude: severance grants (Section 9(7א)) and equity comp disallowed under Section 102(d)(1).</span></div>
       </label>
       <input type="number" id="sal" min="0" placeholder="0" oninput="calc()">
-      <div class="hint">Employees engaged in R&D activity in Israel (Section 1, Item 1)</div>
+      <div class="hint">Cash salaries + employer NI + pension/training fund + deductible equity comp (excl. Section 102(d)(1) disallowed amounts)</div>
       <div class="sub" id="sal-sub"></div>
     </div>
 
+    <!-- Item 2: Depreciation -->
     <div class="field">
       <label>Depreciation on R&D Equipment <span class="rate-badge">×100%</span>
-        <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Depreciation on productive assets used for R&D in Israel. Excludes buildings and vehicles.</span></div>
+        <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Depreciation on productive assets used for R&D in Israel per 1941 Income Tax Regulations. Excludes buildings and vehicles. If assets are leased, use rental payments instead.</span></div>
       </label>
       <input type="number" id="dep" min="0" placeholder="0" oninput="calc()">
       <div class="hint">Machinery &amp; equipment used in Israeli R&D activity (Section 1, Item 2)</div>
       <div class="sub" id="dep-sub"></div>
     </div>
 
+    <!-- Item 3: Unrelated subcontractors -->
     <div class="field">
       <label>Subcontractors — Unrelated Parties <span class="rate-badge">×65%</span>
-        <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">65% of gross R&D expenditure to unrelated Israeli subcontractors.</span></div>
+        <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">65% of gross R&D expenditure paid to unrelated Israeli subcontractors. The subcontractor's group must not have claimed a credit for the same expenses under this law.</span></div>
       </label>
       <input type="number" id="unrel" min="0" placeholder="0" oninput="calc()">
       <div class="hint">65% of expense qualified (Section 1, Item 3)</div>
       <div class="sub" id="unrel-sub"></div>
     </div>
 
+    <!-- Item 4: Related subcontractors -->
     <div class="inner-card">
       <div class="inner-card-title">Subcontractors — Related Parties (Section 1, Item 4)</div>
       <div class="field">
         <label>Proven costs <span class="rate-badge">×100%</span>
-          <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Actual qualifying R&D costs of the related subcontractor that would qualify if incurred directly.</span></div>
+          <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Actual qualifying R&D costs of the related subcontractor that would qualify if incurred directly by the plant. The subcontractor's group must not have claimed a credit for the same expenses.</span></div>
         </label>
         <input type="number" id="relPr" min="0" placeholder="0" oninput="calc()">
         <div class="sub" id="relpr-sub"></div>
       </div>
       <div class="field">
         <label>Unproven costs <span class="rate-badge">×65%</span>
-          <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">If actual costs cannot be proven by the Manager, 65% of gross amount is used.</span></div>
+          <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">If the Manager determines actual costs cannot be proven, 65% of the gross amount paid to the related subcontractor is used.</span></div>
         </label>
         <input type="number" id="relUn" min="0" placeholder="0" oninput="calc()">
         <div class="sub" id="relun-sub"></div>
       </div>
       <div class="field">
         <label>Salary component (for overhead cap)
-          <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Salary element within related subcontractor costs — added to IL salary base for the 20% overhead cap.</span></div>
+          <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">The salary element within the related subcontractor's costs — added to your IL salary base solely for computing the 20% overhead cap in Item 7.</span></div>
         </label>
         <input type="number" id="relSal" min="0" placeholder="0" oninput="calc()">
         <div class="sub" id="relsal-sub"></div>
       </div>
     </div>
 
+    <!-- Item 5: Consumables -->
     <div class="field">
       <label>Consumables &amp; Components <span class="rate-badge">×100%</span>
-        <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Components, disposables, materials consumed in the R&D process during the tax year.</span></div>
+        <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Components, single-use equipment, and consumable materials fully consumed during the tax year in Israeli R&D activities (Section 1, Item 5).</span></div>
       </label>
       <input type="number" id="cons" min="0" placeholder="0" oninput="calc()">
-      <div class="hint">Components, disposables, materials consumed in R&D process (Section 1, Item 5)</div>
+      <div class="hint">Components, disposables, materials fully consumed in R&D process (Section 1, Item 5)</div>
       <div class="sub" id="cons-sub"></div>
     </div>
 
+    <!-- Item 7: Overhead -->
     <div class="field">
-      <label id="ovhd-label">Eligible Overhead <span class="rate-badge" id="ovhd-rate-badge">20% cap</span>
-        <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Other R&D costs not similar to items 1–5, excluding building rent/depreciation. Capped at 20% of salary base (IL salaries + related sub salaries).</span></div>
+      <label>Other / Overhead Expenses <span class="rate-badge-yellow">20% cap</span>
+        <div class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Other R&D costs in Israel not similar in nature to items 1–6, excluding building rent/depreciation. Capped at 20% of the R&D salary base (Item 1 salaries + related subcontractor salary component from Item 4). Section 1, Item 7.</span></div>
       </label>
       <input type="number" id="ovhd" min="0" placeholder="0" oninput="calc()">
-      <div class="hint" id="ovhd-hint">Capped at 20% of salary base — Section 1, Item 7</div>
-      <div class="sub" id="ovhd-sub"></div>
+      <div class="hint" id="ovhd-hint">Salary base: — · Cap: —</div>
+      <div id="ovhd-sub"></div>
     </div>
-
   </div>
+
+  <!-- Historical Approval Rate -->
+  <div class="card" id="approval-card" style="display:none">
+    <div class="card-title">
+      Historical Approval Rate
+      <span class="badge badge-yellow">Optional</span>
+    </div>
+    <div style="font-size:12px;color:#9aa0b8;margin-bottom:12px;line-height:1.6">
+      If the Tax Authority / Innovation Authority has previously approved only a portion of your submitted R&D expenses (e.g. based on a prior 20A application or audit), enter that approval rate here. The qualifying base will be multiplied by this rate before applying the credit rate (3%/4% or 25%/30%).
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <input type="number" id="approvalRate" min="0" max="100" placeholder="e.g. 80" oninput="calc()" style="max-width:180px">
+      <span style="font-size:16px;color:#4b5470;font-weight:500">%</span>
+      <button class="clear-btn" onclick="clearApproval()">Clear</button>
+    </div>
+    <div class="hint" id="approval-hint">Leave blank to use 100% of qualifying base</div>
+    <div class="approval-grid" id="approval-grid" style="display:none">
+      <div class="mini-card">
+        <div class="mini-label">Gross qualifying base</div>
+        <div class="mini-val" id="gross-base-usd">—</div>
+        <div class="mini-ils" id="gross-base-ils">—</div>
+      </div>
+      <div class="mini-card accent">
+        <div class="mini-label" id="adj-label">Adjusted base</div>
+        <div class="mini-val blue" id="adj-base-usd">—</div>
+        <div class="mini-ils" id="adj-base-ils">—</div>
+      </div>
+    </div>
+  </div>
+
 </div><!-- end col-left -->
 
 <!-- RIGHT STICKY PANEL -->
 <div class="sticky-panel">
 
-  <div class="card" id="result-card" style="background:#f5f6fa">
-    <div style="font-size:11px;font-weight:700;color:#9aa0b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Total R&D Credit</div>
-    <div class="result-big" id="result-usd" style="color:#9aa0b8">$0</div>
+  <!-- Total Credit — always visible -->
+  <div class="result-card">
+    <div class="result-label">Total R&D Credit</div>
+    <div class="result-big" id="result-usd">$0</div>
     <div class="result-ils" id="result-ils">₪0</div>
     <div class="result-rate" id="result-rate"></div>
+    <div class="result-notice" id="result-notice" style="display:none">Complete eligibility requirements to calculate credit</div>
   </div>
 
-  <div class="card" id="breakdown-card">
+  <!-- Breakdown -->
+  <div class="card">
     <div class="card-title">Calculation Breakdown</div>
     <div id="breakdown-rows"></div>
     <div class="bar-track" id="bar-track" style="display:none">
@@ -267,24 +318,26 @@
     </div>
   </div>
 
+  <!-- Payout -->
   <div class="card">
     <div class="card-title">Payout Method</div>
     <div class="payout-option active" id="opt-credit" onclick="setPayout('credit')">
       <div class="payout-radio active" id="radio-credit"><div class="payout-radio-dot"></div></div>
       <div>
         <div class="payout-title active" id="ptitle-credit">Tax Credit Offset</div>
-        <div class="payout-desc">Offset against income tax. Unused balance carried forward to future years.</div>
+        <div class="payout-desc">Offset against income tax. Unused balance carried forward to future years (Section 2(ג)).</div>
       </div>
     </div>
     <div class="payout-option" id="opt-grant" onclick="setPayout('grant')">
       <div class="payout-radio" id="radio-grant"></div>
       <div>
-        <div class="payout-title" id="ptitle-grant">Cash Grant — Section 5</div>
-        <div class="payout-desc">Waive credit for direct cash payment within 90 days via ITA. Irrevocable.</div>
+        <div class="payout-title" id="ptitle-grant">Cash Grant — Section 5(ו)</div>
+        <div class="payout-desc">Waive credit for a direct cash payment within 90 days via ITA. Election is irrevocable.</div>
       </div>
     </div>
   </div>
 
+  <!-- SLA -->
   <div class="card">
     <div class="sla-row">
       <div>
@@ -298,7 +351,7 @@
     </div>
   </div>
 
-  <div class="footer">Based on Bill 5786–2026 (approved 25/3/26). Rate ₪3.65/$1 approximate. Not legal or tax advice.</div>
+  <div class="footer-note">Based on Bill 5786–2026 (approved 25/3/26). Live rate via Frankfurter/ECB. Not legal or tax advice.</div>
 </div>
 </div><!-- end layout -->
 
@@ -306,137 +359,181 @@
 const THRESHOLD = 1_050_000_000;
 let RATE = 3.65;
 
-// Fetch live rate from Frankfurter (ECB data, free, no key needed)
+// Live rate fetch
 fetch("https://api.frankfurter.app/latest?from=USD&to=ILS")
   .then(r => r.json())
   .then(d => {
     RATE = d.rates.ILS;
-    el("rate-display").innerHTML = `$1 = ₪${RATE.toFixed(4)} <span class="rate-live">● Live</span>`;
+    document.getElementById("rate-display").innerHTML =
+      `$1 = &#8362;${RATE.toFixed(4)} <span class="rate-live">&#9679; Live</span>`;
     calc();
   })
   .catch(() => {
-    el("rate-display").innerHTML = `$1 = ₪${RATE.toFixed(4)} <span class="rate-fallback">● Fallback</span>`;
+    document.getElementById("rate-display").innerHTML =
+      `$1 = &#8362;${RATE.toFixed(4)} <span class="rate-fallback">&#9679; Fallback</span>`;
   });
-const fmt_usd = n => "$" + Math.round(n/RATE).toLocaleString("en-US");
-const fmt_ils = n => "₪" + Math.round(n).toLocaleString("en-US");
+
+const fmtUSD = n => "$" + Math.round(n / RATE).toLocaleString("en-US");
+const fmtILS = n => "&#8362;" + Math.round(n).toLocaleString("en-US");
 const v = id => parseFloat(document.getElementById(id).value) || 0;
 const el = id => document.getElementById(id);
-const setText = (id, t) => { if(el(id)) el(id).textContent = t; };
-const setHtml = (id, t) => { if(el(id)) el(id).innerHTML = t; };
-const show = (id, s) => { if(el(id)) el(id).style.display = s||"block"; };
-
-function badge(ok, text) {
-  return `<span class="badge ${ok?'badge-green':'badge-red'}">${text}</span>`;
-}
+const badge = (ok, text) => `<span class="badge ${ok?"badge-green":"badge-red"}">${text}</span>`;
 
 function calc() {
   const piN = v("piUSD")*RATE, tgiN = v("tgiUSD")*RATE, grN = v("grUSD")*RATE;
   const ceN = v("ce"), a3N = v("a3"), myeN = v("mye");
   const salN = v("sal")*RATE, depN = v("dep")*RATE, unrelN = v("unrel")*RATE;
-  const relPrN = v("relPr")*RATE, relUnN = v("relUn")*RATE, consN = v("cons")*RATE;
-  const ovhdN = v("ovhd")*RATE, relSalN = v("relSal")*RATE;
+  const relPrN = v("relPr")*RATE, relUnN = v("relUn")*RATE, relSalN = v("relSal")*RATE;
+  const consN = v("cons")*RATE, ovhdN = v("ovhd")*RATE;
 
   const isSpecial = grN >= 10_000_000_000;
   const e1 = piN >= 100_000_000;
   const e2 = tgiN > 0 && piN/tgiN >= 0.55;
   const e3a = ceN >= 200;
   const e3b = a3N >= 200 && myeN >= 150;
-  const e3 = e3a || e3b;
-  const eligible = e1 && e2 && e3;
+  const eligible = e1 && e2 && (e3a || e3b);
 
-  const ovhdCap = 0.20*(salN+relSalN);
+  // Overhead cap
+  const salaryBase = salN + relSalN;
+  const ovhdCap = 0.20 * salaryBase;
   const ovhdOk = Math.min(ovhdN, ovhdCap);
-  const qb = salN+depN+unrelN*0.65+relPrN+relUnN*0.65+consN+ovhdOk;
-  const below = Math.min(qb, THRESHOLD);
-  const above = Math.max(0, qb-THRESHOLD);
-  const benefit = eligible && qb>0 ? (isSpecial ? below*0.25+above*0.30 : below*0.03+above*0.04) : 0;
+
+  // Qualifying base
+  const qb = salN + depN + unrelN*0.65 + relPrN + relUnN*0.65 + consN + ovhdOk;
+
+  // Approval rate
+  const approvalVal = el("approvalRate").value;
+  const approvalFactor = approvalVal !== "" ? Math.min(Math.max(parseFloat(approvalVal)||0, 0), 100) / 100 : 1;
+  const adjBase = qb * approvalFactor;
+
+  const below = Math.min(adjBase, THRESHOLD);
+  const above = Math.max(0, adjBase - THRESHOLD);
+  const benefit = eligible && adjBase > 0
+    ? (isSpecial ? below*0.25 + above*0.30 : below*0.03 + above*0.04)
+    : 0;
 
   // Top badges
   el("badge-eligibility").textContent = eligible ? "Group Eligible" : "Not Eligible";
-  el("badge-eligibility").className = "badge " + (eligible?"badge-green":"badge-red");
+  el("badge-eligibility").className = "badge " + (eligible ? "badge-green" : "badge-red");
   el("badge-type").textContent = isSpecial ? "Special Enterprise" : "Standard Enterprise";
   el("badge-thresh").textContent = eligible ? "Requirements Met" : "Requirements Not Met";
-  el("badge-thresh").className = "badge " + (eligible?"badge-green":"badge-red");
+  el("badge-thresh").className = "badge " + (eligible ? "badge-green" : "badge-red");
   el("badge-rate").textContent = isSpecial ? "SPTE 25%/30%" : "PTE 3%/4%";
 
-  // GR sub
-  setText("gr-sub", v("grUSD")>0 ? fmt_usd(grN)+" / "+fmt_ils(grN)+" · "+(isSpecial?"Special: 25%/30%":"Standard: 3%/4%") : "");
+  // Enterprise sub
+  el("gr-sub").textContent = v("grUSD") > 0
+    ? `${fmtUSD(grN)} / ${fmtILS(grN)} · ${isSpecial ? "Special: 25%/30%" : "Standard: 3%/4%"}` : "";
 
   // PI / TGI
-  setText("pi-sub", piN>0 ? fmt_usd(piN)+" / "+fmt_ils(piN)+(e1?" · ✓ Meets floor":" · ✗ Below floor") : "");
-  const ratio = tgiN>0 ? piN/tgiN*100 : 0;
-  el("tgi-hint").textContent = tgiN>0 ? `Ratio: ${ratio.toFixed(1)}% (need ≥55%) · ${e2?"✓":"✗"}` : "Ratio: 0.0% (need ≥55%)";
-  setText("tgi-sub", tgiN>0 ? fmt_usd(tgiN)+" / "+fmt_ils(tgiN) : "");
+  el("pi-hint").textContent = `Minimum required: ${fmtUSD(100_000_000)}`;
+  el("pi-sub").textContent = piN > 0
+    ? `${fmtUSD(piN)} / ${fmtILS(piN)} · ${e1 ? "✓ Meets floor" : "✗ Below floor"}` : "";
+  const ratio = tgiN > 0 ? piN/tgiN*100 : 0;
+  el("tgi-hint").textContent = tgiN > 0
+    ? `Ratio: ${ratio.toFixed(1)}% (need ≥55%) · ${e2?"✓":"✗"}` : "Ratio: 0.0% (need ≥55%)";
+  el("tgi-sub").textContent = tgiN > 0 ? `${fmtUSD(tgiN)} / ${fmtILS(tgiN)}` : "";
 
-  if(tgiN>0){
-    show("intensity-wrap"); el("intensity-fill").style.width=Math.min(ratio,100)+"%";
-    el("intensity-fill").style.background = e2?"#16a34a":"#dc2626";
-    el("intensity-pct").textContent = ratio.toFixed(1)+"%";
-    el("intensity-pct").style.color = e2?"#16a34a":"#dc2626";
-  } else { show("intensity-wrap","none"); }
+  if (tgiN > 0) {
+    el("intensity-wrap").style.display = "block";
+    el("intensity-fill").style.width = Math.min(ratio, 100) + "%";
+    el("intensity-fill").style.background = e2 ? "#16a34a" : "#dc2626";
+    el("intensity-pct").textContent = ratio.toFixed(1) + "%";
+    el("intensity-pct").style.color = e2 ? "#16a34a" : "#dc2626";
+  } else { el("intensity-wrap").style.display = "none"; }
 
-  // Employment hints
-  el("ce-hint").textContent = ceN>0 ? (e3a?"✓ ≥200 — passes directly":ceN+"< 200") : "";
-  el("a3-hint").textContent = a3N>0 ? (a3N>=200?"✓ Average ≥200":a3N+" < 200") : "";
-  el("mye-hint").textContent = myeN>0 ? (myeN>=150?"✓ ≥150":"✗ "+myeN+" < 150 — 3yr avg test fails") : "Must be ≥150 for 3-year average test";
-  setHtml("emp-badges", badge(e3a,`Current ${ceN} ${e3a?"≥":"<"} 200 ${e3a?"✓":"✗"}`) + " " + badge(e3b,`3yr avg ${e3b?"passes":"not met"}`));
+  // Employment
+  el("ce-hint").textContent = ceN > 0 ? (e3a ? "✓ ≥200 — passes directly" : ceN + " < 200") : "";
+  el("a3-hint").textContent = a3N > 0 ? (a3N >= 200 ? "✓ Average ≥200" : a3N + " < 200") : "";
+  el("mye-hint").textContent = myeN > 0 ? (myeN >= 150 ? "✓ ≥150" : "✗ " + myeN + " < 150 — 3yr avg test fails") : "Must be ≥150 for 3-year average test";
+  el("emp-badges").innerHTML = badge(e3a, `Current ${ceN} ${e3a?"≥":"<"} 200 ${e3a?"✓":"✗"}`) + " " + badge(e3b, `3yr avg ${e3b?"passes":"not met"}`);
 
   // Expense subs
-  const expFields = [
+  const expMap = [
     ["sal-sub", salN, 1], ["dep-sub", depN, 1], ["unrel-sub", unrelN, 0.65],
     ["relpr-sub", relPrN, 1], ["relun-sub", relUnN, 0.65],
     ["relsal-sub", relSalN, null], ["cons-sub", consN, 1],
   ];
-  expFields.forEach(([id, n, rate]) => {
-    if(n>0) {
-      setText(id, rate!==null ? `Applied: ${fmt_usd(n*rate)} / ${fmt_ils(n*rate)}` : `${fmt_usd(n)} / ${fmt_ils(n)}`);
-    } else setText(id, "");
+  expMap.forEach(([id, n, rate]) => {
+    el(id).textContent = n > 0
+      ? (rate !== null ? `Applied: ${fmtUSD(n*rate)} / ${fmtILS(n*rate)}` : `${fmtUSD(n)} / ${fmtILS(n)}`)
+      : "";
   });
 
   // Overhead
-  el("ovhd-hint").textContent = "Cap: "+fmt_usd(ovhdCap)+" / "+fmt_ils(ovhdCap)+" (20% of salary base) — Section 1, Item 7"+(ovhdN>ovhdCap?" · ⚠ Input exceeds cap":"");
-  if(ovhdN>0){
-    el("ovhd-sub").textContent = ovhdN>ovhdCap ? `⚠ Capped at ${fmt_usd(ovhdCap)} / ${fmt_ils(ovhdCap)}` : `Applied: ${fmt_usd(ovhdOk)} / ${fmt_ils(ovhdOk)}`;
-    el("ovhd-sub").className = ovhdN>ovhdCap ? "sub warn" : "sub";
-  } else setText("ovhd-sub","");
+  el("ovhd-hint").textContent =
+    `Salary base: ${fmtUSD(salaryBase)} / ${fmtILS(salaryBase)} · Cap: ${fmtUSD(ovhdCap)} / ${fmtILS(ovhdCap)}`;
+  if (ovhdN > 0) {
+    const warn = ovhdN > ovhdCap;
+    el("ovhd-sub").className = warn ? "sub-warn" : "sub";
+    el("ovhd-sub").textContent = warn
+      ? `⚠ Input ${fmtUSD(ovhdN)} exceeds cap — applied: ${fmtUSD(ovhdCap)} / ${fmtILS(ovhdCap)}`
+      : `Applied: ${fmtUSD(ovhdOk)} / ${fmtILS(ovhdOk)}`;
+  } else { el("ovhd-sub").textContent = ""; }
 
-  // Result card
-  el("result-usd").textContent = fmt_usd(benefit);
-  el("result-ils").textContent = fmt_ils(benefit);
-  el("result-usd").style.color = benefit>0?"#4361ee":"#9aa0b8";
-  el("result-card").style.background = benefit>0?"#eef0fd":"#f5f6fa";
-  el("result-card").style.border = benefit>0?"1px solid #c7cef9":"1px solid #e4e7ef";
-  setText("result-rate", benefit>0&&qb>0 ? "Effective rate: "+(benefit/qb*100).toFixed(3)+"%" : "");
+  // Approval card — show only when qb > 0
+  el("approval-card").style.display = qb > 0 ? "block" : "none";
+  if (approvalVal !== "" && approvalFactor < 1) {
+    el("approval-hint").textContent =
+      `Qualifying base × ${(approvalFactor*100).toFixed(0)}% → adjusted base: ${fmtUSD(adjBase)} / ${fmtILS(adjBase)}`;
+    el("approval-grid").style.display = "grid";
+    el("gross-base-usd").textContent = fmtUSD(qb);
+    el("gross-base-ils").innerHTML = fmtILS(qb);
+    el("adj-label").textContent = `Adjusted base (${(approvalFactor*100).toFixed(0)}%)`;
+    el("adj-base-usd").textContent = fmtUSD(adjBase);
+    el("adj-base-ils").innerHTML = fmtILS(adjBase);
+  } else {
+    el("approval-hint").textContent = "Leave blank to use 100% of qualifying base";
+    el("approval-grid").style.display = "none";
+  }
 
-  // Breakdown
+  // Result panel
+  el("result-usd").textContent = fmtUSD(benefit);
+  el("result-ils").innerHTML = fmtILS(benefit);
+  el("result-rate").textContent = benefit > 0 && adjBase > 0
+    ? `Effective rate: ${(benefit/adjBase*100).toFixed(3)}%` : "";
+  el("result-notice").style.display = !eligible ? "block" : "none";
+
+  // Breakdown rows
   const rows = [
-    {l:"Qualifying base", v:qb, bold:false},
-    {l:`Below threshold (${isSpecial?"25%":"3%"})`, v:below*(isSpecial?.25:.03), bold:false},
-    {l:`Above threshold (${isSpecial?"30%":"4%"})`, v:above*(isSpecial?.30:.04), bold:false},
-    {l:"Total credit", v:benefit, bold:true},
+    { l: "Gross qualifying base", v: qb, bold: false },
+    ...(approvalVal !== "" && approvalFactor < 1
+      ? [{ l: `Approval adjustment (×${(approvalFactor*100).toFixed(0)}%)`, v: adjBase, bold: false }]
+      : []),
+    { l: `Below threshold (${isSpecial?"25%":"3%"})`, v: below*(isSpecial?.25:.03), bold: false },
+    { l: `Above threshold (${isSpecial?"30%":"4%"})`, v: above*(isSpecial?.30:.04), bold: false },
+    { l: "Total credit", v: benefit, bold: true },
   ];
-  el("breakdown-rows").innerHTML = rows.map(r=>`
+  el("breakdown-rows").innerHTML = rows.map(r => `
     <div class="breakdown-row">
       <span class="breakdown-label${r.bold?" bold":""}">${r.l}</span>
       <div class="breakdown-val">
-        <div class="breakdown-val-usd${r.bold?" bold":""}">${fmt_usd(r.v)}</div>
-        <div class="breakdown-val-ils">${fmt_ils(r.v)}</div>
+        <div class="breakdown-usd${r.bold?" bold":""}">${fmtUSD(r.v)}</div>
+        <div class="breakdown-ils">${fmtILS(r.v)}</div>
       </div>
     </div>`).join("");
 
-  if(qb>0){
-    show("bar-track"); show("bar-labels");
-    el("bar-below").style.flex = below; el("bar-above").style.flex = above;
-  } else { show("bar-track","none"); show("bar-labels","none"); }
+  if (adjBase > 0) {
+    el("bar-track").style.display = "flex";
+    el("bar-labels").style.display = "flex";
+    el("bar-below").style.flex = below;
+    el("bar-above").style.flex = above;
+  } else {
+    el("bar-track").style.display = "none";
+    el("bar-labels").style.display = "none";
+  }
+}
+
+function clearApproval() {
+  document.getElementById("approvalRate").value = "";
+  calc();
 }
 
 function setPayout(id) {
   ["credit","grant"].forEach(p => {
-    el("opt-"+p).className = "payout-option"+(p===id?" active":"");
-    el("radio-"+p).className = "payout-radio"+(p===id?" active":"");
-    el("ptitle-"+p).className = "payout-title"+(p===id?" active":"");
-    if(p===id) el("radio-"+p).innerHTML='<div class="payout-radio-dot"></div>';
-    else el("radio-"+p).innerHTML='';
+    el("opt-"+p).className = "payout-option" + (p===id?" active":"");
+    el("radio-"+p).className = "payout-radio" + (p===id?" active":"");
+    el("ptitle-"+p).className = "payout-title" + (p===id?" active":"");
+    el("radio-"+p).innerHTML = p===id ? '<div class="payout-radio-dot"></div>' : "";
   });
 }
 
